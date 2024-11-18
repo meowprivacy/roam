@@ -6,7 +6,7 @@ function App() {
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
-    const [planData, setPlanData] = useState([]);
+    const [setPlanData] = useState([]);
 
     // 定義所有可選套餐
     const availablePlans = [
