@@ -45,7 +45,7 @@ function App() {
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
 
             // 發送 API 請求獲取套餐數據
-            axios.post('https://roamplan-api.account-9cc.workers.dev/api/plans', { queries })
+            axios.post('https://roamplan-api.account-9cc.workers.dev/', { queries })
                 .then(response => {
                     // 設置返回的套餐數據
                     setPlanData(response.data);
