@@ -22,8 +22,8 @@ function App() {
         { operator: 'CMHK', series: 'publicPlanTwo', name: 'CMHK - 一卡兩地計劃' },
         { operator: 'CUHK', series: 'publicPlanCN', name: 'CUHK - 5G ONE大灣區' },
         { operator: 'CUHK', series: 'noContractPlan', name: 'CUHK - 月神卡（無合約）' },
-		{ operator: '3', series: 'publicPlanThree', name: '3 - 5G數據跨地自「遊」行月費計劃' },
-        { operator: '3', series: 'diy', name: '3 - Diy' },
+		{ operator: 'Three', series: 'publicPlanThree', name: '3 - 5G數據跨地自「遊」行月費計劃' },
+        { operator: 'Three', series: 'diy', name: '3 - Diy' },
         { operator: 'Free', series: 'publicPlanCN', name: 'Free - 19.99EUR' },
     ];
 
