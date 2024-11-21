@@ -122,6 +122,7 @@ function App() {
                     // 顯示流量總量和各套餐的單價
                     let tooltip = `0 - ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
+						const price = item.data !== null && item.data !== undefined ? item.data : '无效'; // 检查数据是否有效
                         tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
                     });
                     //return tooltip;
