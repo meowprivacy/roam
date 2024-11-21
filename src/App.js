@@ -67,10 +67,12 @@ function App() {
         // 獲取圖表容器
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
-
+		
+		myChart.clear();
+		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
-            myChart.clear();
+            
             return;
         }
 
