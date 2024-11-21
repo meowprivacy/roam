@@ -40,6 +40,7 @@ function App() {
 
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
+		if (JSON.stringify(selectedPlans) !== JSON.stringify(prevSelectedPlansRef.current)) {
         if (selectedPlans.length > 0) {
             // 根據選擇的套餐組裝查詢請求
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
@@ -60,6 +61,10 @@ function App() {
             setPlanData([]);
             renderChart([]);  // 清空圖表
         }
+		// 更新保存的 previous selectedPlans 值
+        prevSelectedPlansRef.current = selectedPlans;
+        }
+		
     }, [selectedPlans]);
 
     // 渲染圖表的函數
@@ -68,11 +73,11 @@ function App() {
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
-		myChart.clear();
+		
 		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
-            
+            myChart.clear();
             return;
         }
 
