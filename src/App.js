@@ -107,6 +107,7 @@ function App() {
                 smooth: false,  // 關閉平滑，確保顯示折線而非曲線
                 connectNulls: true,  // 連接空值，避免顯示中斷
                 data: dataVolumeMap,  // 套餐的流量和單價數據
+				packagePrice: plan.packagePrice, // 套餐总价数据
             };
         });
 
@@ -123,7 +124,7 @@ function App() {
                     let tooltip = `流量总量： ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
 						const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
-						const seriesData = item.seriesData || {}; // 防止数据为空
+						//const seriesData = item.seriesData || {}; // 防止数据为空
 						const totalPrice = seriesData.packagePrice || '无效';
 						tooltip += `${item.marker} ${item.seriesName}: 单价 ${price} MOP, HKD/GB，参考价 ${totalPrice} MOP, HKD<br/>`;
                     });
