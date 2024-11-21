@@ -71,11 +71,11 @@ function App() {
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
-		
+		 myChart.clear();
 		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
-            myChart.clear();
+            //myChart.clear();
             return;
         }
 
@@ -123,7 +123,6 @@ function App() {
                     let tooltip = `0 - ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
 						const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
-                        //tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
 						tooltip += `${item.marker} ${item.seriesName}: ${price} MOP, HKD/GB<br/>`;
                     });
                     //return tooltip;
