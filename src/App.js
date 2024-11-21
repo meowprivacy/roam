@@ -6,7 +6,7 @@ function App() {
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
-    const [setPlanData] = useState([]);
+    const [planData, setPlanData] = useState([]);
 
     // 定義所有可選套餐
     const availablePlans = [
@@ -45,7 +45,7 @@ function App() {
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
 
             // 發送 API 請求獲取套餐數據
-            axios.post('https://api.roam.ran.ac/api/plans', { queries })
+            axios.post('https://roamplan-api.account-9cc.workers.dev/api/plans', { queries })
                 .then(response => {
                     // 設置返回的套餐數據
                     setPlanData(response.data);
@@ -53,25 +53,22 @@ function App() {
                     renderChart(response.data);
                 })
                 .catch(error => {
-                    // 錯誤處理，顯示錯誤信息
                     console.error('Error fetching plan data:', error);
-                    alert('載入套餐數據失敗，請稍後再試！');
                 });
         } else {
             // 如果沒有選擇任何套餐，清除圖表數據
             setPlanData([]);
             renderChart([]);  // 清空圖表
         }
-    }, [selectedPlans]); // 監聽 selectedPlans 的變化
+    }, [selectedPlans]);
 
     // 渲染圖表的函數
     const renderChart = (data) => {
         // 獲取圖表容器
         const chartDom = document.getElementById('chart');
-        // 初始化圖表實例
-        const myChart = echarts.getInstanceByDom(chartDom) || echarts.init(chartDom);
+        const myChart = echarts.init(chartDom);
 
-        // 如果沒有數據，清空圖表
+        // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
             myChart.clear();
             return;
@@ -99,6 +96,7 @@ function App() {
             }
 
             return {
+                // 使用模板字符串動態設置套餐名稱
                 name: `${plan.operator} - ${plan.series}`,
                 type: 'line',  // 設置為折線圖
                 smooth: false,  // 關閉平滑，確保顯示折線而非曲線
@@ -116,9 +114,10 @@ function App() {
             tooltip: {
                 trigger: 'axis',
                 formatter: params => {
-                    let tooltip = `0 - ${params[0].axisValue} GB<br/>`;  // 顯示流量總量
+                    // 顯示流量總量和各套餐的單價
+                    let tooltip = `0 - ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
-                        tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;  // 顯示單價
+                        tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
                     });
                     return tooltip;
                 },
@@ -126,7 +125,7 @@ function App() {
             legend: {
                 type: 'scroll',
                 top: '10%',
-                data: seriesData.map(s => s.name),  // 顯示每個套餐的名稱
+                data: seriesData.map(s => s.name),
             },
             grid: {
                 left: '3%',
@@ -141,28 +140,18 @@ function App() {
                 name: '流量總量 (GB)',
                 axisLine: {
                     show: true,
-                    lineStyle: {
-                        color: '#000',  // 設置 x 軸顏色
-                        type: 'solid',  // 顯示實線
-                    },
+                    lineStyle: { color: '#000', type: 'solid' },  // 設置 x 軸顏色
                 },
-                axisTick: {
-                    show: false,  // 隱藏刻度線
-                },
-                axisLabel: {
-                    interval: 0,  // 使所有的流量區間都顯示
-                },
+                axisTick: { show: false },  // 隱藏刻度線
+                axisLabel: { interval: 0 },  // 顯示所有刻度
                 splitLine: {
                     show: true,  // 顯示分隔線
-                    lineStyle: {
-                        color: '#ccc',  // 設置分隔線顏色
-                        type: 'dashed',  // 設置虛線
-                    },
+                    lineStyle: { color: '#ccc', type: 'dashed' },  // 設置虛線
                 },
             },
             yAxis: {
                 type: 'value',
-                name: '單價 (MOP, HKD/GB)',
+                name: '單價 (MOP, HKD/GB)',  // 設置 y 軸名稱
             },
             series: seriesData,  // 使用構建好的系列數據
         };
