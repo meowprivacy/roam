@@ -124,18 +124,36 @@ function App() {
                 formatter: params => {
                     // 顯示流量總量和各套餐的單價
                     let tooltip = `流量总量： ${params[0].axisValue} GB<br/>`;
-                    params.forEach(item => {
-						//const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
-						//const seriesData = item.seriesData || {}; // 防止数据为空
-						//const totalPrice = seriesData.packagePrice || '无效';
+					
+					 // 获取当前悬停的流量区间（例如：10GB，20GB）
+					const currentVolume = params[0].axisValue;
+		
+                    //params.forEach(item => {
+					//	const { value, packagePrice } = item.data || {}; // 从 `item.data` 中解构获取值
+					//	const price = value !== null ? value : '无效'; // 单价
+					//	const totalPrice = packagePrice !== undefined ? packagePrice : '无效'; // 总价
 						
-						const { value, packagePrice } = item.data || {}; // 从 `item.data` 中解构获取值
-						const price = value !== null ? value : '无效'; // 单价
-						const totalPrice = packagePrice !== undefined ? packagePrice : '无效'; // 总价
-						
-						tooltip += `${item.marker} ${item.seriesName}: 单价 ${price} MOP, HKD/GB，参考价 ${totalPrice} MOP, HKD<br/>`;
-                    });
-                    //return tooltip;
+					//	tooltip += `${item.marker} ${item.seriesName}: 单价 ${price} MOP, HKD/GB，参考价 ${totalPrice} MOP, HKD<br/>`;
+                    //});
+					
+					// 遍历每个套餐的数据，找到当前区间对应的参考价
+					params.forEach(item => {
+						const { dataVolumeMap, seriesName } = item.seriesData || {}; // 获取当前套餐的流量价格数据
+
+						// 查找当前流量区间的价格
+						const currentData = dataVolumeMap.find(data => data.volume === currentVolume);
+
+						if (currentData) {
+							// 找到当前区间的价格
+							const price = currentData.price !== null ? currentData.price : '无效';  // 单价
+							const totalPrice = item.seriesData.packagePrice || '无效';  // 总价
+
+							tooltip += `${item.marker} ${seriesName}: 单价 ${price} MOP, HKD/GB，参考价 ${totalPrice} MOP, HKD<br/>`;
+						} else {
+							tooltip += `${item.marker} ${seriesName}: 无效数据<br/>`;
+						}
+					});
+					
 					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
 					return `<div style="max-width: 300px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
                 },
