@@ -26,6 +26,9 @@
       "react-app",
       "react-app/jest"
     ]
+	"rules": {
+		"no-unused-vars": "off"
+	}
   },
   "browserslist": {
     "production": [
@@ -42,10 +45,4 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
-  "eslintConfig": {
-	"rules": {
-		"no-unused-vars": "off"
-	}
-  }
-
 }
