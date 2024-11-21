@@ -15,13 +15,16 @@ function App() {
         { operator: 'CTM', series: 'phonePlan', name: 'CTM - iPhone16 Pro 256GB 購機上台（折合機價）' },
         { operator: 'CTM', series: 'stuPlan', name: 'CTM - 學生計劃' },
         { operator: 'CTM', series: 'prepaidPackage', name: 'CTM - 預付卡' },
-        { operator: 'CTMO', series: 'publicPlanCNHKMO', name: 'CTMO - 三地計劃' },
-        { operator: 'CTMO', series: 'publicPlanCNMO', name: 'CTMO - 兩地計劃' },
+        { operator: 'CTMO', series: 'publicPlanThree', name: 'CTMO - 三地計劃' },
+        { operator: 'CTMO', series: 'publicPlanTwo', name: 'CTMO - 兩地計劃' },
         { operator: 'CTMO', series: 'stuPlan', name: 'CTMO - 學生計劃' },
-        { operator: 'CMHK', series: 'publicPlanCNHKMO', name: 'CMHK - 一卡三地計劃' },
-        { operator: 'CMHK', series: 'publicPlanCNHK', name: 'CMHK - 一卡兩地計劃' },
+        { operator: 'CMHK', series: 'publicPlanThree', name: 'CMHK - 一卡三地計劃' },
+        { operator: 'CMHK', series: 'publicPlanTwo', name: 'CMHK - 一卡兩地計劃' },
         { operator: 'CUHK', series: 'publicPlanCN', name: 'CUHK - 5G ONE大灣區' },
         { operator: 'CUHK', series: 'noContractPlan', name: 'CUHK - 月神卡（無合約）' },
+		{ operator: 'Three', series: 'publicPlanThree', name: '3 - 5G數據跨地自「遊」行月費計劃' },
+        { operator: 'Three', series: 'diy', name: '3 - Diy' },
+        { operator: 'Free', series: 'publicPlanCN', name: 'Free - 19.99EUR' },
     ];
 
     // 處理套餐選擇變更，更新選擇的套餐
