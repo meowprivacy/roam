@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import * as echarts from 'echarts';
 
@@ -37,11 +37,9 @@ function App() {
             }
         });
     };
-	// 保存 selectedPlans 上一次的值
-    const prevSelectedPlansRef = useRef();
+
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
-		if (JSON.stringify(selectedPlans) !== JSON.stringify(prevSelectedPlansRef.current)) {
         if (selectedPlans.length > 0) {
             // 根據選擇的套餐組裝查詢請求
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
@@ -62,10 +60,6 @@ function App() {
             setPlanData([]);
             renderChart([]);  // 清空圖表
         }
-		// 更新保存的 previous selectedPlans 值
-        prevSelectedPlansRef.current = selectedPlans;
-        }
-		
     }, [selectedPlans]);
 
     // 渲染圖表的函數
