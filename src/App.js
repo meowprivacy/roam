@@ -122,8 +122,9 @@ function App() {
                     // 顯示流量總量和各套餐的單價
                     let tooltip = `0 - ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
-						const price = item.data !== null && item.data !== undefined ? item.data : '无效'; // 检查数据是否有效
-                        tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
+						const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
+                        //tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
+						tooltip += `${item.marker} ${item.seriesName}: ${price} MOP, HKD/GB<br/>`;
                     });
                     //return tooltip;
 					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
