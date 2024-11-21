@@ -122,7 +122,8 @@ function App() {
                         tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
                     });
                     //return tooltip;
-					return `<div style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${tooltip}</div>`;
+					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
+					return `<div style="max-width: 250px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
                 },
             },
             legend: {
