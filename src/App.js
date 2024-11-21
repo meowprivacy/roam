@@ -91,7 +91,7 @@ function App() {
                 const index = plan.dataVolume.indexOf(volume);
                 return {
 					value: index !== -1 ? plan.unitPrice[index] : null;
-					packagePrice: plan.packagePrice || '无效',         // 总价
+					packagePrice: plan.packagePrice || '无效';         // 总价
 				};
             });
 
