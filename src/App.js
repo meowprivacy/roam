@@ -126,7 +126,7 @@ function App() {
                     });
                     //return tooltip;
 					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
-					return `<div style="max-width: 250px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
+					return `<div style="max-width: 300px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
                 },
 				position: function (point, params, dom, rect, size) {
 					// 获取屏幕的宽高
