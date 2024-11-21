@@ -90,8 +90,8 @@ function App() {
                 // 找到流量區間對應的單價，若無數據則為 null
                 const index = plan.dataVolume.indexOf(volume);
                 return {
-					value: index !== -1 ? plan.unitPrice[index] : null;
-					packagePrice: plan.packagePrice || '无效';         // 总价
+					value: index !== -1 ? plan.unitPrice[index] : null,
+					packagePrice: plan.packagePrice || '无效',
 				};
             });
 
