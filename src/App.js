@@ -121,25 +121,9 @@ function App() {
                     params.forEach(item => {
                         tooltip += `${item.marker} ${item.seriesName}: ${item.data} MOP, HKD/GB<br/>`;
                     });
-                    return tooltip;
+                    //return tooltip;
+					return `<div style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${tooltip}</div>`;
                 },
-				// 使 tooltip 在屏幕范围内
-				position: function (point, params, dom, rect, size) {
-				// point 是鼠标的位置
-				// dom 是 tooltip 的 DOM 元素
-				// size 包含 tooltip 的宽高
-				const offsetX = size.contentSize[0];
-				const offsetY = size.contentSize[1];
-
-				const screenWidth = window.innerWidth;
-				const screenHeight = window.innerHeight;
-
-				// 如果 tooltip 溢出右边界，则将其移到左边
-				let left = point[0] + offsetX > screenWidth ? point[0] - offsetX : point[0];
-				let top = point[1] + offsetY > screenHeight ? point[1] - offsetY : point[1];
-
-				return [left, top];  // 返回新的位置
-				}
             },
             legend: {
                 type: 'scroll',
