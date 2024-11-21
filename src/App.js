@@ -89,14 +89,17 @@ function App() {
             let dataVolumeMap = uniqueDataVolumes.map(volume => {
                 // 找到流量區間對應的單價，若無數據則為 null
                 const index = plan.dataVolume.indexOf(volume);
-                return index !== -1 ? plan.unitPrice[index] : null;
+                return {
+					value: index !== -1 ? plan.unitPrice[index] : null;
+					packagePrice: plan.packagePrice || '无效',         // 总价
+				};
             });
 
             // 確保相同單價區間內的數據為水平直線
             for (let i = 1; i < dataVolumeMap.length; i++) {
-                if (dataVolumeMap[i] === dataVolumeMap[i - 1] && dataVolumeMap[i] !== null) {
+                if (dataVolumeMap[i].value === dataVolumeMap[i - 1].value && dataVolumeMap[i].value !== null) {
                     // 如果相鄰兩個區間的單價相同，將其值設為上一個區間的單價，這樣就會形成直線
-                    dataVolumeMap[i] = dataVolumeMap[i - 1];
+                    dataVolumeMap[i].value = dataVolumeMap[i - 1].value;
                 }
             }
 
@@ -107,7 +110,6 @@ function App() {
                 smooth: false,  // 關閉平滑，確保顯示折線而非曲線
                 connectNulls: true,  // 連接空值，避免顯示中斷
                 data: dataVolumeMap,  // 套餐的流量和單價數據
-				packagePrice: plan.packagePrice, // 套餐总价数据
             };
         });
 
@@ -123,9 +125,14 @@ function App() {
                     // 顯示流量總量和各套餐的單價
                     let tooltip = `流量总量： ${params[0].axisValue} GB<br/>`;
                     params.forEach(item => {
-						const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
-						const seriesData = item.seriesData || {}; // 防止数据为空
-						const totalPrice = seriesData.packagePrice || '无效';
+						//const price = item.data !== null ? item.data : '无效'; // 检查数据是否有效
+						//const seriesData = item.seriesData || {}; // 防止数据为空
+						//const totalPrice = seriesData.packagePrice || '无效';
+						
+						const { value, packagePrice } = item.data || {}; // 从 `item.data` 中解构获取值
+						const price = value !== null ? value : '无效'; // 单价
+						const totalPrice = packagePrice !== undefined ? packagePrice : '无效'; // 总价
+						
 						tooltip += `${item.marker} ${item.seriesName}: 单价 ${price} MOP, HKD/GB，参考价 ${totalPrice} MOP, HKD<br/>`;
                     });
                     //return tooltip;
