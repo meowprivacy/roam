@@ -37,7 +37,8 @@ function App() {
             }
         });
     };
-
+	// 保存 selectedPlans 上一次的值
+    const prevSelectedPlansRef = useRef();
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
 		if (JSON.stringify(selectedPlans) !== JSON.stringify(prevSelectedPlansRef.current)) {
