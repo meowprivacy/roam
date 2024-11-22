@@ -3,6 +3,7 @@ import axios from 'axios';
 import * as echarts from 'echarts';
 
 function App() {
+	const [selectedOperators, setSelectedOperators] = useState([]); // 选中的运营商
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
@@ -27,19 +28,31 @@ function App() {
         { operator: 'Free', series: 'publicPlanGlobal', name: 'Free - 19.99EUR' },
     ];
 
-    // 處理套餐選擇變更，更新選擇的套餐
-    const handleCheckboxChange = (e, plan) => {
+	// 获取所有的运营商列表
+    const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)));
+
+    // 处理运营商选择
+    const handleOperatorChange = (e) => {
+        const { value, checked } = e.target;
+        setSelectedOperators((prev) => {
+            if (checked) return [...prev, value]; // 添加选中的运营商
+            return prev.filter(op => op !== value); // 移除取消的运营商
+        });
+        // 清空当前的套餐选择，避免选中无效的套餐
+        setSelectedPlans([]);
+    };
+
+    // 处理套餐选择
+    const handlePlanChange = (e, plan) => {
         const { checked } = e.target;
-        setSelectedPlans(prevPlans => {
-            if (checked) {
-                // 如果選中該套餐，將它加入到已選套餐中
-                return [...prevPlans, plan];
-            } else {
-                // 如果取消選中該套餐，從已選套餐中移除
-                return prevPlans.filter(p => p.operator !== plan.operator || p.series !== plan.series);
-            }
+        setSelectedPlans((prev) => {
+            if (checked) return [...prev, plan];
+            return prev.filter(p => p.operator !== plan.operator || p.series !== plan.series);
         });
     };
+
+    // 根据选中的运营商过滤套餐
+    const filteredPlans = availablePlans.filter(plan => selectedOperators.includes(plan.operator));
 
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
@@ -71,7 +84,7 @@ function App() {
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
-		 myChart.clear();
+		myChart.clear();
 		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
@@ -92,7 +105,6 @@ function App() {
                 return {
 					value: index !== -1 ? plan.unitPrice[index] : null,
 					packageValue: index !== -1 ? plan.packagePrice[index] : null,
-					//packagePrice: plan.packagePrice || '无效',
 				};
             });
 
@@ -198,20 +210,30 @@ function App() {
         <div>
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
             {/* 顯示所有可選套餐並允許用戶選擇 */}
+			<div>
+                <h2>選擇運營商</h2>
+                {operators.map(operator => (
+                    <div key={operator}>
+                        <input
+                            type="checkbox"
+                            value={operator}
+                            onChange={handleOperatorChange}
+                        />
+                        <label>{operator}</label>
+                    </div>
+                ))}
+            </div>
             <div>
-                <h2>選擇顯示的套餐</h2>
-                <div>
-                    {availablePlans.map(plan => (
-                        <div key={`${plan.operator}-${plan.series}`}>
-                            <input
-                                type="checkbox"
-                                id={`${plan.operator}-${plan.series}`}
-                                onChange={e => handleCheckboxChange(e, plan)}  // 當選擇改變時更新選擇的套餐
-                            />
-                            <label htmlFor={`${plan.operator}-${plan.series}`}>{plan.name}</label>
-                        </div>
-                    ))}
-                </div>
+                <h2>選擇套餐</h2>
+                {filteredPlans.map(plan => (
+                    <div key={`${plan.operator}-${plan.series}`}>
+                        <input
+                            type="checkbox"
+                            onChange={e => handlePlanChange(e, plan)}
+                        />
+                        <label>{plan.name}</label>
+                    </div>
+                ))}
             </div>
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>

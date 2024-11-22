@@ -71,7 +71,7 @@ function App() {
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
-		 myChart.clear();
+		myChart.clear();
 		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
@@ -92,7 +92,6 @@ function App() {
                 return {
 					value: index !== -1 ? plan.unitPrice[index] : null,
 					packageValue: index !== -1 ? plan.packagePrice[index] : null,
-					//packagePrice: plan.packagePrice || '无效',
 				};
             });
 
