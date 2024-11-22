@@ -214,6 +214,8 @@ function App() {
                 <Select
                     options={operators.map(op => ({ value: op, label: op }))}
                     onChange={handleOperatorChange}
+					value={selectedOperators}
+                    isMulti
                     placeholder="選擇運營商"
                     isClearable
                 />
