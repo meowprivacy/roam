@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import * as echarts from 'echarts';
+import Select from 'react-select';  // 引入 react-select
 
 function App() {
 	const [selectedOperators, setSelectedOperators] = useState([]); // 选中的运营商
@@ -28,36 +29,25 @@ function App() {
         { operator: 'Free', series: 'publicPlanGlobal', name: 'Free - 19.99EUR' },
     ];
 
-	// 取得所有運營商
-    const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)));
+	// 从 availablePlans 中提取运营商并去重
+    const operatorOptions = Array.from(new Set(availablePlans.map(plan => plan.operator)))
+        .map(operator => ({ value: operator, label: operator }));
 
-    // 根據選擇的運營商過濾可用套餐
-    const getAvailablePlansForOperators = (selectedOperators) => {
-        return availablePlans.filter(plan => selectedOperators.includes(plan.operator));
+    // 根据运营商选择，过滤套餐
+    const filteredPlans = availablePlans.filter(plan =>
+        selectedOperators.some(operator => operator.value === plan.operator)
+    );
+
+    // 处理运营商选择变更
+    const handleOperatorChange = selectedOptions => {
+        setSelectedOperators(selectedOptions);
     };
 
-    // 處理運營商選擇變更
-    const handleOperatorChange = (e) => {
-        const { options } = e.target;
-        const selectedValues = Array.from(options)
-            .filter(option => option.selected)
-            .map(option => option.value);
-        setSelectedOperators(selectedValues);
+    // 处理套餐选择变更
+    const handlePlanChange = selectedOptions => {
+        setSelectedPlans(selectedOptions);
     };
 
-    // 處理套餐選擇變更，更新選擇的套餐
-    const handleCheckboxChange = (e, plan) => {
-        const { checked } = e.target;
-        setSelectedPlans(prevPlans => {
-            if (checked) {
-                // 如果選中該套餐，將它加入到已選套餐中
-                return [...prevPlans, plan];
-            } else {
-                // 如果取消選中該套餐，從已選套餐中移除
-                return prevPlans.filter(p => p.operator !== plan.operator || p.series !== plan.series);
-            }
-        });
-    };
 	
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
@@ -214,33 +204,28 @@ function App() {
     return (
         <div>
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
-            {/* 顯示所有可選套餐並允許用戶選擇 */}
-			<div>
-                <h2>選擇運營商</h2>
-                <select multiple={true} value={selectedOperators} onChange={handleOperatorChange} style={{ width: '200px', height: '120px' }}>
-                    {operators.map(operator => (
-                        <option key={operator} value={operator}>
-                            {operator}
-                        </option>
-                    ))}
-                </select>
+            {/* 运营商选择下拉框 */}
+            <div>
+                <h2>选择运营商</h2>
+                <Select
+                    isMulti
+                    options={operatorOptions}
+                    onChange={handleOperatorChange}
+                    value={selectedOperators}
+                    placeholder="选择运营商"
+                />
             </div>
 
-            {/* 顯示根據選擇的運營商過濾後的套餐 */}
+            {/* 套餐选择下拉框 */}
             <div>
-                <h2>選擇顯示的套餐</h2>
-                <div>
-                    {getAvailablePlansForOperators(selectedOperators).map(plan => (
-                        <div key={`${plan.operator}-${plan.series}`}>
-                            <input
-                                type="checkbox"
-                                id={`${plan.operator}-${plan.series}`}
-                                onChange={e => handleCheckboxChange(e, plan)}
-                            />
-                            <label htmlFor={`${plan.operator}-${plan.series}`}>{plan.name}</label>
-                        </div>
-                    ))}
-                </div>
+                <h2>选择套餐</h2>
+                <Select
+                    isMulti
+                    options={filteredPlans.map(plan => ({ value: plan.series, label: plan.name }))}
+                    onChange={handlePlanChange}
+                    value={selectedPlans}
+                    placeholder="选择套餐"
+                />
             </div>
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>
