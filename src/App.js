@@ -232,8 +232,9 @@ function App() {
                 />
                 {/* 第二个下拉框：选择套餐 */}
                 <Select
-                    options={selectedOperator ? getPlansByOperator(selectedOperator.value) : []}
-                    onChange={handlePlanChange}
+                    //options={selectedOperator ? getPlansByOperators(selectedOperator.value) : []}
+                    options={getPlansByOperators(selectedOperators)}
+					onChange={handlePlanChange}
                     value={selectedPlans}
                     isMulti
                     placeholder="選擇套餐"
