@@ -39,7 +39,7 @@ function App() {
     //        series: plan.series,
     //    }));
 	// 筛选指定运营商的套餐
-    const getPlansByOperators = selectedOperators => {
+    const getPlansByOperators = (selectedOperators = []) => {
         const selectedOperatorValues = selectedOperators.map(op => op.value);
         return availablePlans
             .filter(plan => selectedOperatorValues.includes(plan.operator))
@@ -238,7 +238,8 @@ function App() {
                     value={selectedPlans}
                     isMulti
                     placeholder="選擇套餐"
-                    isDisabled={!selectedOperators}
+                    //isDisabled={!selectedOperators}
+					isDisabled={selectedOperators.length === 0}
                 />
             </div>
             {/* 顯示圖表的容器 */}
