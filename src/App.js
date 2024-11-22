@@ -207,7 +207,6 @@ function App() {
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
             {/* 选择运营商的下拉框 */}
             <div>
-                <h2>选择运营商</h2>
                 <Select
                     isMulti
                     options={operators}
@@ -218,7 +217,6 @@ function App() {
             </div>
             {/* 选择套餐的下拉框，根据选择的运营商动态显示 */}
             <div>
-                <h2>选择套餐</h2>
                 <Select
                     isMulti
                     options={getFilteredPlans().map(plan => ({
