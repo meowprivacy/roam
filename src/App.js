@@ -51,20 +51,6 @@ function App() {
         setSelectedPlans(selected || []); // 更新选中的套餐
     };
 
-    // 處理套餐選擇變更，更新選擇的套餐
-    //const handleCheckboxChange = (e, plan) => {
-    //    const { checked } = e.target;
-    //    setSelectedPlans(prevPlans => {
-    //        if (checked) {
-    //            // 如果選中該套餐，將它加入到已選套餐中
-    //            return [...prevPlans, plan];
-    //        } else {
-                // 如果取消選中該套餐，從已選套餐中移除
-    //            return prevPlans.filter(p => p.operator !== plan.operator || p.series !== plan.series);
-    //        }
-    //    });
-    //};
-
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
         if (selectedPlans.length > 0) {
@@ -222,35 +208,25 @@ function App() {
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
             {/* 顯示所有可選套餐並允許用戶選擇 */}
             <div style={{ marginBottom: '20px' }}>
+			
                 <h2>選擇顯示的套餐</h2>
-                {/* 第一個下拉框：運營商選擇 */}
-                <select value={selectedOperator || ''} onChange={handleOperatorChange}>
-                    <option value="" disabled>
-                        選擇運營商
-                    </option>
-                    {operators.map(op => (
-                        <option key={op} value={op}>
-                            {op}
-                        </option>
-                    ))}
-                </select>
-
-                {/* 第二個下拉框：套餐選擇 */}
-                <select
-                    multiple
-                    value={selectedPlans.map(plan => `${plan.operator}-${plan.series}`)}
+                {/* 第一个下拉框：选择运营商 */}
+                <Select
+                    options={operators.map(op => ({ value: op, label: op }))}
+                    onChange={handleOperatorChange}
+                    placeholder="選擇運營商"
+                    isClearable
+                />
+                {/* 第二个下拉框：选择套餐 */}
+                <Select
+                    options={selectedOperator ? getPlansByOperator(selectedOperator.value) : []}
                     onChange={handlePlanChange}
-                    style={{ marginLeft: '10px', minWidth: '200px' }}
-                    disabled={!selectedOperator}
-                >
-                    {filteredPlans.map(plan => (
-                        <option key={`${plan.operator}-${plan.series}`} value={`${plan.operator}-${plan.series}`}>
-                            {plan.name}
-                        </option>
-                    ))}
-                </select>
+                    value={selectedPlans}
+                    isMulti
+                    placeholder="選擇套餐"
+                    isDisabled={!selectedOperator}
+                />
             </div>
-
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>
         </div>
