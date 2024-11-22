@@ -239,7 +239,7 @@ function App() {
                     isMulti
                     placeholder="選擇套餐"
                     //isDisabled={!selectedOperators}
-					isDisabled={selectedOperators.length === 0}
+					isDisabled={!selectedOperators || selectedOperators.length === 0}
                 />
             </div>
             {/* 顯示圖表的容器 */}
