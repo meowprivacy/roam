@@ -4,7 +4,7 @@ import * as echarts from 'echarts';
 import Select from 'react-select'; // 使用 React Select 库
 
 function App() {
-	const [selectedOperator, setSelectedOperator] = useState(null); // 已选的运营商
+	const [selectedOperator, setSelectedOperators] = useState(null); // 已选的运营商
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
@@ -42,7 +42,7 @@ function App() {
 
     // 处理运营商选择
     const handleOperatorChange = selected => {
-        setSelectedOperator(selected); // 更新选中的运营商
+        setSelectedOperators(selected); // 更新选中的运营商
         setSelectedPlans([]); // 清空已选套餐
     };
 
