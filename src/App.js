@@ -4,7 +4,7 @@ import * as echarts from 'echarts';
 import Select from 'react-select'; // 使用 React Select 库
 
 function App() {
-	const [selectedOperator, setSelectedOperators] = useState(null); // 已选的运营商
+	const [selectedOperators, setSelectedOperators] = useState(null); // 已选的运营商
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
@@ -238,7 +238,7 @@ function App() {
                     value={selectedPlans}
                     isMulti
                     placeholder="選擇套餐"
-                    isDisabled={!selectedOperator}
+                    isDisabled={!selectedOperators}
                 />
             </div>
             {/* 顯示圖表的容器 */}
