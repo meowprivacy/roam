@@ -28,32 +28,37 @@ function App() {
         { operator: 'Free', series: 'publicPlanGlobal', name: 'Free - 19.99EUR' },
     ];
 
-	// 获取所有的运营商列表
+	// 取得所有運營商
     const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)));
 
-    // 处理运营商选择
+    // 根據選擇的運營商過濾可用套餐
+    const getAvailablePlansForOperators = (selectedOperators) => {
+        return availablePlans.filter(plan => selectedOperators.includes(plan.operator));
+    };
+
+    // 處理運營商選擇變更
     const handleOperatorChange = (e) => {
-        const { value, checked } = e.target;
-        setSelectedOperators((prev) => {
-            if (checked) return [...prev, value]; // 添加选中的运营商
-            return prev.filter(op => op !== value); // 移除取消的运营商
-        });
-        // 清空当前的套餐选择，避免选中无效的套餐
-        setSelectedPlans([]);
+        const { options } = e.target;
+        const selectedValues = Array.from(options)
+            .filter(option => option.selected)
+            .map(option => option.value);
+        setSelectedOperators(selectedValues);
     };
 
-    // 处理套餐选择
-    const handlePlanChange = (e, plan) => {
+    // 處理套餐選擇變更，更新選擇的套餐
+    const handleCheckboxChange = (e, plan) => {
         const { checked } = e.target;
-        setSelectedPlans((prev) => {
-            if (checked) return [...prev, plan];
-            return prev.filter(p => p.operator !== plan.operator || p.series !== plan.series);
+        setSelectedPlans(prevPlans => {
+            if (checked) {
+                // 如果選中該套餐，將它加入到已選套餐中
+                return [...prevPlans, plan];
+            } else {
+                // 如果取消選中該套餐，從已選套餐中移除
+                return prevPlans.filter(p => p.operator !== plan.operator || p.series !== plan.series);
+            }
         });
     };
-
-    // 根据选中的运营商过滤套餐
-    const filteredPlans = availablePlans.filter(plan => selectedOperators.includes(plan.operator));
-
+	
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
         if (selectedPlans.length > 0) {
@@ -212,28 +217,30 @@ function App() {
             {/* 顯示所有可選套餐並允許用戶選擇 */}
 			<div>
                 <h2>選擇運營商</h2>
-                {operators.map(operator => (
-                    <div key={operator}>
-                        <input
-                            type="checkbox"
-                            value={operator}
-                            onChange={handleOperatorChange}
-                        />
-                        <label>{operator}</label>
-                    </div>
-                ))}
+                <select multiple={true} value={selectedOperators} onChange={handleOperatorChange} style={{ width: '200px', height: '120px' }}>
+                    {operators.map(operator => (
+                        <option key={operator} value={operator}>
+                            {operator}
+                        </option>
+                    ))}
+                </select>
             </div>
+
+            {/* 顯示根據選擇的運營商過濾後的套餐 */}
             <div>
-                <h2>選擇套餐</h2>
-                {filteredPlans.map(plan => (
-                    <div key={`${plan.operator}-${plan.series}`}>
-                        <input
-                            type="checkbox"
-                            onChange={e => handlePlanChange(e, plan)}
-                        />
-                        <label>{plan.name}</label>
-                    </div>
-                ))}
+                <h2>選擇顯示的套餐</h2>
+                <div>
+                    {getAvailablePlansForOperators(selectedOperators).map(plan => (
+                        <div key={`${plan.operator}-${plan.series}`}>
+                            <input
+                                type="checkbox"
+                                id={`${plan.operator}-${plan.series}`}
+                                onChange={e => handleCheckboxChange(e, plan)}
+                            />
+                            <label htmlFor={`${plan.operator}-${plan.series}`}>{plan.name}</label>
+                        </div>
+                    ))}
+                </div>
             </div>
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>
