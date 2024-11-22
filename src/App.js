@@ -29,26 +29,27 @@ function App() {
         { operator: 'Free', series: 'publicPlanGlobal', name: 'Free - 19.99EUR' },
     ];
 
-	// 从 availablePlans 中提取运营商并去重
-    const operatorOptions = Array.from(new Set(availablePlans.map(plan => plan.operator)))
+	// 获取所有的运营商
+    const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)))
         .map(operator => ({ value: operator, label: operator }));
 
-    // 根据运营商选择，过滤套餐
-    const filteredPlans = availablePlans.filter(plan =>
-        selectedOperators.some(operator => operator.value === plan.operator)
-    );
-
-    // 处理运营商选择变更
-    const handleOperatorChange = selectedOptions => {
+    // 处理运营商选择变化
+    const handleOperatorChange = (selectedOptions) => {
         setSelectedOperators(selectedOptions);
     };
 
-    // 处理套餐选择变更
-    const handlePlanChange = selectedOptions => {
+    // 获取根据选择的运营商过滤的套餐列表
+    const getFilteredPlans = () => {
+        if (selectedOperators.length === 0) return [];
+        const selectedOperatorValues = selectedOperators.map(option => option.value);
+        return availablePlans.filter(plan => selectedOperatorValues.includes(plan.operator));
+    };
+
+    // 处理套餐选择变化
+    const handlePlanChange = (selectedOptions) => {
         setSelectedPlans(selectedOptions);
     };
 
-	
     // 當選擇的套餐有變化時發送 API 請求
     useEffect(() => {
         if (selectedPlans.length > 0) {
@@ -204,24 +205,28 @@ function App() {
     return (
         <div>
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
-            {/* 运营商选择下拉框 */}
+            {/* 选择运营商的下拉框 */}
             <div>
                 <h2>选择运营商</h2>
                 <Select
                     isMulti
-                    options={operatorOptions}
+                    options={operators}
                     onChange={handleOperatorChange}
                     value={selectedOperators}
                     placeholder="选择运营商"
                 />
             </div>
-
-            {/* 套餐选择下拉框 */}
+            {/* 选择套餐的下拉框，根据选择的运营商动态显示 */}
             <div>
                 <h2>选择套餐</h2>
                 <Select
                     isMulti
-                    options={filteredPlans.map(plan => ({ value: plan.series, label: plan.name }))}
+                    options={getFilteredPlans().map(plan => ({
+                        value: `${plan.operator}-${plan.series}`,
+                        label: plan.name,
+                        operator: plan.operator,
+                        series: plan.series,
+                    }))}
                     onChange={handlePlanChange}
                     value={selectedPlans}
                     placeholder="选择套餐"
