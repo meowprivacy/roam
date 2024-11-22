@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import * as echarts from 'echarts';
-import Select from 'react-select'; // 使用 React Select 库
 
 function App() {
-	const [selectedOperators, setSelectedOperators] = useState(null); // 已选的运营商
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
@@ -28,38 +26,19 @@ function App() {
         { operator: 'Three', series: 'diy', name: '3 - Diy' },
         { operator: 'Free', series: 'publicPlanGlobal', name: 'Free - 19.99EUR' },
     ];
-    // 获取所有运营商列表
-    const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)));
 
-    //const getPlansByOperator = operator =>
-    //    availablePlans.filter(plan => plan.operator === operator).map(plan => ({
-    //        value: `${plan.operator}-${plan.series}`,
-    //        label: plan.name,
-    //        operator: plan.operator,
-    //        series: plan.series,
-    //    }));
-	// 筛选指定运营商的套餐
-    const getPlansByOperators = (selectedOperators = []) => {
-        const selectedOperatorValues = selectedOperators.map(op => op.value);
-        return availablePlans
-            .filter(plan => selectedOperatorValues.includes(plan.operator))
-            .map(plan => ({
-                value: `${plan.operator}-${plan.series}`,
-                label: plan.name,
-                operator: plan.operator,
-                series: plan.series,
-            }));
-    };
-
-    // 处理运营商选择
-    const handleOperatorChange = selected => {
-        setSelectedOperators(selected); // 更新选中的运营商
-        setSelectedPlans([]); // 清空已选套餐
-    };
-
-    // 处理套餐选择
-    const handlePlanChange = selected => {
-        setSelectedPlans(selected || []); // 更新选中的套餐
+    // 處理套餐選擇變更，更新選擇的套餐
+    const handleCheckboxChange = (e, plan) => {
+        const { checked } = e.target;
+        setSelectedPlans(prevPlans => {
+            if (checked) {
+                // 如果選中該套餐，將它加入到已選套餐中
+                return [...prevPlans, plan];
+            } else {
+                // 如果取消選中該套餐，從已選套餐中移除
+                return prevPlans.filter(p => p.operator !== plan.operator || p.series !== plan.series);
+            }
+        });
     };
 
     // 當選擇的套餐有變化時發送 API 請求
@@ -92,7 +71,7 @@ function App() {
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
-		myChart.clear();
+		 myChart.clear();
 		
         // 如果沒有數據，直接返回，清空圖表
         if (data.length === 0) {
@@ -113,6 +92,7 @@ function App() {
                 return {
 					value: index !== -1 ? plan.unitPrice[index] : null,
 					packageValue: index !== -1 ? plan.packagePrice[index] : null,
+					//packagePrice: plan.packagePrice || '无效',
 				};
             });
 
@@ -218,29 +198,20 @@ function App() {
         <div>
             <h1>中國大陸漫遊PLAN流量單價比較</h1>
             {/* 顯示所有可選套餐並允許用戶選擇 */}
-            <div style={{ marginBottom: '20px' }}>
-			
+            <div>
                 <h2>選擇顯示的套餐</h2>
-                {/* 第一个下拉框：选择运营商 */}
-                <Select
-                    options={operators.map(op => ({ value: op, label: op }))}
-                    onChange={handleOperatorChange}
-					value={selectedOperators}
-                    isMulti
-                    placeholder="選擇運營商"
-                    isClearable
-                />
-                {/* 第二个下拉框：选择套餐 */}
-                <Select
-                    //options={selectedOperator ? getPlansByOperators(selectedOperator.value) : []}
-                    options={getPlansByOperators(selectedOperators)}
-					onChange={handlePlanChange}
-                    value={selectedPlans}
-                    isMulti
-                    placeholder="選擇套餐"
-                    //isDisabled={!selectedOperators}
-					//isDisabled={!selectedOperators || selectedOperators.length === 0}
-                />
+                <div>
+                    {availablePlans.map(plan => (
+                        <div key={`${plan.operator}-${plan.series}`}>
+                            <input
+                                type="checkbox"
+                                id={`${plan.operator}-${plan.series}`}
+                                onChange={e => handleCheckboxChange(e, plan)}  // 當選擇改變時更新選擇的套餐
+                            />
+                            <label htmlFor={`${plan.operator}-${plan.series}`}>{plan.name}</label>
+                        </div>
+                    ))}
+                </div>
             </div>
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>
