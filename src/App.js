@@ -31,14 +31,25 @@ function App() {
     // 获取所有运营商列表
     const operators = Array.from(new Set(availablePlans.map(plan => plan.operator)));
 
-    // 筛选指定运营商的套餐
-    const getPlansByOperator = operator =>
-        availablePlans.filter(plan => plan.operator === operator).map(plan => ({
-            value: `${plan.operator}-${plan.series}`,
-            label: plan.name,
-            operator: plan.operator,
-            series: plan.series,
-        }));
+    //const getPlansByOperator = operator =>
+    //    availablePlans.filter(plan => plan.operator === operator).map(plan => ({
+    //        value: `${plan.operator}-${plan.series}`,
+    //        label: plan.name,
+    //        operator: plan.operator,
+    //        series: plan.series,
+    //    }));
+	// 筛选指定运营商的套餐
+    const getPlansByOperators = selectedOperators => {
+        const selectedOperatorValues = selectedOperators.map(op => op.value);
+        return availablePlans
+            .filter(plan => selectedOperatorValues.includes(plan.operator))
+            .map(plan => ({
+                value: `${plan.operator}-${plan.series}`,
+                label: plan.name,
+                operator: plan.operator,
+                series: plan.series,
+            }));
+    };
 
     // 处理运营商选择
     const handleOperatorChange = selected => {
