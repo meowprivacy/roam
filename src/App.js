@@ -146,6 +146,19 @@ function App() {
 					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
 					return `<div style="max-width: 300px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
                 },
+                // tooltip 始終居中
+				position: function (point, params, dom, rect, size) {
+					// 获取屏幕的宽高
+					const screenWidth = window.innerWidth;
+					const screenHeight = window.innerHeight;
+
+					// 计算居中位置
+					const left = (screenWidth - size.contentSize[0]) / 2;
+					const top = (screenHeight - size.contentSize[1]) / 2;
+
+					// 返回居中的位置
+					return [left, top];
+				},
             },
             legend: {
                 type: 'scroll',
