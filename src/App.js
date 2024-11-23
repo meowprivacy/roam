@@ -61,7 +61,7 @@ function App() {
     };
 
     // 當選擇的套餐有變化時發送 API 請求
-    useEffect(() => {
+    useEffect(() => { const fetchPlanData = () => {
         if (selectedPlans.length > 0) {
             // 根據選擇的套餐組裝查詢請求
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
@@ -82,7 +82,7 @@ function App() {
             setPlanData([]);
             //renderChart([]);  // 清空圖表
 			renderChart([], customPlans);
-        }
+        } };
 		fetchPlanData();
 	}, [selectedPlans, customPlans]);
 	
