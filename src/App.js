@@ -175,7 +175,7 @@ function App() {
                 type: 'line',  // 設置為折線圖
                 smooth: false,  // 關閉平滑，確保顯示折線而非曲線
                 connectNulls: true,  // 連接空值，避免顯示中斷
-                data: dataVolumeMap,  // 套餐的流量和單價數據
+                allData: dataVolumeMap,  // 套餐的流量和單價數據
             };
         });
 
