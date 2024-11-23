@@ -72,7 +72,7 @@ function App() {
             setPlanData([]);
             renderChart([]);  // 清空圖表
         }
-    }, [selectedPlans]);
+    }, [selectedPlans, setPlanData]);
 
     // 渲染圖表的函數
     const renderChart = (data) => {
