@@ -149,35 +149,19 @@ function App() {
         const uniqueDataVolumes = Array.from(new Set(allDataVolumes)).sort((a, b) => a - b);
 
         // 構建每個套餐的數據系列
-        const seriesData = allData.map(plan => {
-            // 將每個套餐的流量單價轉換為對應的流量區間數據
-            let dataVolumeMap = uniqueDataVolumes.map(volume => {
-                // 找到流量區間對應的單價，若無數據則為 null
+
+		const seriesData = allData.map(plan => ({
+            name: plan.name,
+            type: 'line',
+            smooth: false,
+            connectNulls: true,
+            data: uniqueDataVolumes.map(volume => {
                 const index = plan.dataVolume.indexOf(volume);
                 return {
-					value: index !== -1 ? plan.unitPrice[index] : null,
-					packageValue: index !== -1 ? plan.packagePrice[index] : null,
-				};
-            });
-
-            // 確保相同單價區間內的數據為水平直線
-            for (let i = 1; i < dataVolumeMap.length; i++) {
-                if (dataVolumeMap[i].value === dataVolumeMap[i - 1].value && dataVolumeMap[i].value !== null) {
-                    // 如果相鄰兩個區間的單價相同，將其值設為上一個區間的單價，這樣就會形成直線
-                    dataVolumeMap[i].value = dataVolumeMap[i - 1].value;
-                }
-            }
-
-            return {
-                // 使用模板字符串動態設置套餐名稱
-                //name: `${plan.operator} - ${plan.series}`,
-				name: plan.name,
-                type: 'line',  // 設置為折線圖
-                smooth: false,  // 關閉平滑，確保顯示折線而非曲線
-                connectNulls: true,  // 連接空值，避免顯示中斷
-                allData: dataVolumeMap,  // 套餐的流量和單價數據
-            };
-        });
+                    value: index !== -1 ? plan.unitPrice[index] : null,
+                    packageValue: index !== -1 ? plan.packagePrice[index] : null,
+                };
+            }),
 
         // 設置圖表的配置選項
         const option = {
