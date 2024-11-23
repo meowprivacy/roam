@@ -9,17 +9,7 @@ function App() {
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
     const [planData, setPlanData] = useState([]);
-	
-	const [customPlans, setCustomPlans] = useState([]); // 保存自定义套餐
-	const [customPlanInputs, setCustomPlanInputs] = useState({
-        totalDataVolume: '', // 流量总量
-        planPrice: '', // 套餐价格
-        isPhonePlan: false, // 是否购机上台
-        upfrontPayment: 0, // 预缴金额
-        phonePrice: 0, // 机器价格
-        contractMonths: 0, // 合约月数
-    });
-	
+
     // 定義所有可選套餐
     const availablePlans = [
         { operator: 'CTM', series: 'simOnly', name: 'CTM - 淨月費計劃' },
@@ -61,7 +51,7 @@ function App() {
     };
 
     // 當選擇的套餐有變化時發送 API 請求
-    useEffect(() => { const fetchPlanData = () => {
+    useEffect(() => {
         if (selectedPlans.length > 0) {
             // 根據選擇的套餐組裝查詢請求
             const queries = selectedPlans.map(plan => ({ operator: plan.operator, series: plan.series }));
@@ -72,7 +62,7 @@ function App() {
                     // 設置返回的套餐數據
                     setPlanData(response.data);
                     // 渲染圖表
-                    renderChart(response.data, customPlans); // 合并渲染自定义套餐
+                    renderChart(response.data);
                 })
                 .catch(error => {
                     console.error('Error fetching plan data:', error);
@@ -80,89 +70,57 @@ function App() {
         } else {
             // 如果沒有選擇任何套餐，清除圖表數據
             setPlanData([]);
-            //renderChart([]);  // 清空圖表
-			renderChart([], customPlans);
-        } };
-		fetchPlanData();
-	}, [selectedPlans, customPlans]);
-	
-	const handleCustomInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setCustomPlanInputs(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-    };
-
-    const addCustomPlan = () => {
-        const {
-            totalDataVolume,
-            planPrice,
-            isPhonePlan,
-            upfrontPayment,
-            phonePrice,
-            contractMonths,
-        } = customPlanInputs;
-
-        if (!totalDataVolume || !planPrice) {
-            alert("请填写完整的流量总量和套餐价格！");
-            return;
+            renderChart([]);  // 清空圖表
         }
-
-        const totalData = parseFloat(totalDataVolume);
-        const price = parseFloat(planPrice);
-        const upfront = isPhonePlan ? parseFloat(upfrontPayment || 0) : 0;
-        const phone = isPhonePlan ? parseFloat(phonePrice || 0) : 0;
-        const months = isPhonePlan ? parseFloat(contractMonths || 1) : 1;
-
-        const unitPrice = (price - upfront / months + phone / months) / totalData;
-
-        const newCustomPlan = {
-            name: `自定义套餐 - ${customPlans.length + 1}`,
-            dataVolume: [totalData],
-            unitPrice: [unitPrice],
-            packagePrice: [price],
-        };
-
-        setCustomPlans([...customPlans, newCustomPlan]);
-        renderChart(planData, [...customPlans, newCustomPlan]); // 重新渲染图表
-    };
-
+    }, [selectedPlans]);
 
     // 渲染圖表的函數
-    const renderChart = (data, customData) => {
+    const renderChart = (data) => {
         // 獲取圖表容器
         const chartDom = document.getElementById('chart');
         const myChart = echarts.init(chartDom);
 		
 		myChart.clear();
 		
-		const allData = [...data, ...customData];
         // 如果沒有數據，直接返回，清空圖表
-        if (allData.length === 0) {
+        if (data.length === 0) {
             //myChart.clear();
             return;
         }
 
         // 從所有套餐數據中提取所有的流量總量並去重排序
-        const allDataVolumes = allData.reduce((acc, plan) => acc.concat(plan.dataVolume), []);
+        const allDataVolumes = data.reduce((acc, plan) => acc.concat(plan.dataVolume), []);
         const uniqueDataVolumes = Array.from(new Set(allDataVolumes)).sort((a, b) => a - b);
 
         // 構建每個套餐的數據系列
-
-		const seriesData = allData.map(plan => ({
-            name: plan.name,
-            type: 'line',
-            smooth: false,
-            connectNulls: true,
-            data: uniqueDataVolumes.map(volume => {
+        const seriesData = data.map(plan => {
+            // 將每個套餐的流量單價轉換為對應的流量區間數據
+            let dataVolumeMap = uniqueDataVolumes.map(volume => {
+                // 找到流量區間對應的單價，若無數據則為 null
                 const index = plan.dataVolume.indexOf(volume);
                 return {
-                    value: index !== -1 ? plan.unitPrice[index] : null,
-                    packageValue: index !== -1 ? plan.packagePrice[index] : null,
-                };
-            }),
-		}));
+					value: index !== -1 ? plan.unitPrice[index] : null,
+					packageValue: index !== -1 ? plan.packagePrice[index] : null,
+				};
+            });
+
+            // 確保相同單價區間內的數據為水平直線
+            for (let i = 1; i < dataVolumeMap.length; i++) {
+                if (dataVolumeMap[i].value === dataVolumeMap[i - 1].value && dataVolumeMap[i].value !== null) {
+                    // 如果相鄰兩個區間的單價相同，將其值設為上一個區間的單價，這樣就會形成直線
+                    dataVolumeMap[i].value = dataVolumeMap[i - 1].value;
+                }
+            }
+
+            return {
+                // 使用模板字符串動態設置套餐名稱
+                name: `${plan.operator} - ${plan.series}`,
+                type: 'line',  // 設置為折線圖
+                smooth: false,  // 關閉平滑，確保顯示折線而非曲線
+                connectNulls: true,  // 連接空值，避免顯示中斷
+                data: dataVolumeMap,  // 套餐的流量和單價數據
+            };
+        });
 
         // 設置圖表的配置選項
         const option = {
@@ -272,40 +230,6 @@ function App() {
                     placeholder="选择套餐"
                 />
             </div>
-			
-			<div>
-                <h2>添加自定义套餐</h2>
-                <label>
-                    流量总量 (GB):
-                    <input type="number" name="totalDataVolume" value={customPlanInputs.totalDataVolume} onChange={handleCustomInputChange} />
-                </label>
-                <label>
-                    套餐价格 (MOP, HKD):
-                    <input type="number" name="planPrice" value={customPlanInputs.planPrice} onChange={handleCustomInputChange} />
-                </label>
-                <label>
-                    <input type="checkbox" name="isPhonePlan" checked={customPlanInputs.isPhonePlan} onChange={handleCustomInputChange} />
-                    购机上台
-                </label>
-                {customPlanInputs.isPhonePlan && (
-                    <>
-                        <label>
-                            预缴金额:
-                            <input type="number" name="upfrontPayment" value={customPlanInputs.upfrontPayment} onChange={handleCustomInputChange} />
-                        </label>
-                        <label>
-                            机器价格:
-                            <input type="number" name="phonePrice" value={customPlanInputs.phonePrice} onChange={handleCustomInputChange} />
-                        </label>
-                        <label>
-                            合约月数:
-                            <input type="number" name="contractMonths" value={customPlanInputs.contractMonths} onChange={handleCustomInputChange} />
-                        </label>
-                    </>
-                )}
-                <button onClick={addCustomPlan}>添加套餐</button>
-            </div>
-			
             {/* 顯示圖表的容器 */}
             <div id="chart" style={{ width: '100%', height: '600px' }}></div>
         </div>
