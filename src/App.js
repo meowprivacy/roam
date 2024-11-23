@@ -8,7 +8,7 @@ function App() {
     // 儲存選擇的套餐
     const [selectedPlans, setSelectedPlans] = useState([]);
     // 儲存從後端獲取的套餐數據
-    const [planData, setPlanData] = useState([]);
+    const [setPlanData] = useState([]);
 
     // 定義所有可選套餐
     const availablePlans = [
@@ -135,10 +135,8 @@ function App() {
                     let tooltip = `流量总量： ${params[0].axisValue} GB<br/>`;
 					
 					 // 获取当前悬停的流量区间（例如：10GB，20GB）
-					const currentVolume = params[0].axisValue;
-		
                     params.forEach(item => {
-						const { value, packageValue } = item.data || {}; // 从 `item.data` 中解构获取值
+                        const { value, packageValue } = item.data || {}; // 从 `item.data` 中解构获取值
 						const price = value !== null ? value : '无效'; // 单价
 						const totalPrice = packageValue !== undefined ? packageValue : '无效'; // 总价
 						
@@ -148,18 +146,6 @@ function App() {
 					// 使用 max-width 来限制宽度，同时使用 white-space: normal 让内容换行
 					return `<div style="max-width: 300px; white-space: normal; word-wrap: break-word;">${tooltip}</div>`;
                 },
-				position: function (point, params, dom, rect, size) {
-					// 获取屏幕的宽高
-					const screenWidth = window.innerWidth;
-					const screenHeight = window.innerHeight;
-
-					// 计算居中位置
-					const left = (screenWidth - size.contentSize[0]) / 2;
-					const top = (screenHeight - size.contentSize[1]) / 2;
-
-					// 返回居中的位置
-					return [left, top];
-				},
             },
             legend: {
                 type: 'scroll',
