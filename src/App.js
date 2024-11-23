@@ -162,6 +162,7 @@ function App() {
                     packageValue: index !== -1 ? plan.packagePrice[index] : null,
                 };
             }),
+		}));
 
         // 設置圖表的配置選項
         const option = {
