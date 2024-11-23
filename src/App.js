@@ -139,13 +139,13 @@ function App() {
 		
 		const allData = [...data, ...customData];
         // 如果沒有數據，直接返回，清空圖表
-        if (data.length === 0) {
+        if (allData.length === 0) {
             //myChart.clear();
             return;
         }
 
         // 從所有套餐數據中提取所有的流量總量並去重排序
-        const allDataVolumes = data.reduce((acc, plan) => acc.concat(plan.dataVolume), []);
+        const allDataVolumes = allData.reduce((acc, plan) => acc.concat(plan.dataVolume), []);
         const uniqueDataVolumes = Array.from(new Set(allDataVolumes)).sort((a, b) => a - b);
 
         // 構建每個套餐的數據系列
